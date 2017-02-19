@@ -19,17 +19,20 @@ class Trial(object):
 
 class Block(object):
     """docstring for Block"""
-    def __init__(self, train=False):
+    def __init__(self, train=False, testing=False):
         super(Block, self).__init__()
         self.trials = []
-        if not train:
+        if train:
+            for i in xrange(TRIALS_PER_BLOCK):
+                self.trials.append(Trial(i % 4, False))
+        elif testing:
+            for i in xrange(TRIALS_PER_BLOCK):
+                self.trials.append(Trial(i % 4, True))
+        else:
             for i in xrange(DISTRACTIONS_PER_BLOCK):
                 self.trials.append(Trial(i % 4, True))
 
             for i in xrange(TRIALS_PER_BLOCK - DISTRACTIONS_PER_BLOCK):
-                self.trials.append(Trial(i % 4, False))
-        else:
-            for i in xrange(TRIALS_PER_BLOCK):
                 self.trials.append(Trial(i % 4, False))
 
         shuffle(self.trials)
@@ -71,13 +74,19 @@ def generate_trial(target_finger):
     return(vibration, event)
 
 
-def generate_experiment():
+def generate_experiment(testing=False):
+    print "Generating Experiment"
     blocks = []
-    blocks.append(Block(train=True))
-    for i in xrange(BLOCKS):
-        blocks.append(Block())
-    shuffle(blocks)
-    return blocks
+    if testing:
+        for i in xrange(BLOCKS):
+            blocks.append(Block(testing=True))
+        return blocks
+    else:
+        blocks.append(Block(train=True))
+        for i in xrange(BLOCKS):
+            blocks.append(Block())
+        # shuffle(blocks)
+        return blocks
 
 
 # block = Block()
